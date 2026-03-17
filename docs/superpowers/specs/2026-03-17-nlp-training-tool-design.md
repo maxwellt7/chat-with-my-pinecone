@@ -24,6 +24,11 @@ A web-based NLP (Neuro-Linguistic Programming) training tool for personal use. C
 - **AI:** Claude API (Anthropic SDK)
 - **Storage:** Browser localStorage for progress tracking
 - **Content:** Structured JSON files (no database)
+- **Styling:** Tailwind CSS
+
+## Content Preparation
+
+The 4 PDFs must be manually extracted into structured JSON files before implementation begins. This is a pre-work step done during the build process using Claude to parse the PDF content into the JSON schemas defined below. Each JSON file is hand-verified against the source PDF for accuracy. The JSON files are committed to the repo as static data.
 
 ## Architecture
 
@@ -46,9 +51,8 @@ nlp-training-tool/
 │   ├── index.js                # Express server entry
 │   ├── config/anthropic.js     # Claude API config
 │   ├── routes/
-│   │   ├── learn.js            # Lesson content + quiz evaluation
-│   │   ├── practice.js         # Roleplay chat sessions
-│   │   └── reference.js        # Pattern lookup
+│   │   ├── learn.js            # Lesson content + quiz generation/evaluation
+│   │   └── practice.js         # Roleplay chat sessions
 │   └── data/
 │       ├── modules.json        # Curriculum structure
 │       ├── milton-model.json   # 19 Milton Model patterns
@@ -71,15 +75,22 @@ All content extracted and structured from:
 - NLP Supremacy Complex Meta Programs (MPVI)
 - Personal Breakthrough Session Guide
 
-### Module 1: NLP Foundations
-- What is NLP (Neuro, Linguistic, Programming definitions)
-- Prime Directives of the Unconscious Mind (21 directives)
-- NLP Communication Model (External Event → Filters → Internal Representation → State → Physiology → Behavior)
-- Presuppositions of NLP (14 principles, "RESPECT UR-WORLD" mnemonic)
-- State vs Goal (values/states vs goals/outcomes comparison)
+### Module 1: NLP Foundations (5 lessons)
+- **Lesson 1:** What is NLP (Neuro, Linguistic, Programming definitions) + What is it really (Attitude, Methodology, Techniques)
+- **Lesson 2:** Prime Directives of the Unconscious Mind (directives 1-11)
+- **Lesson 3:** Prime Directives of the Unconscious Mind (directives 12-21)
+- **Lesson 4:** NLP Communication Model (External Event → Filters → Internal Representation → State → Physiology → Behavior)
+- **Lesson 5:** Presuppositions of NLP (14 principles, "RESPECT UR-WORLD" mnemonic) + State vs Goal
 
-### Module 2: Milton Model — Hypnotic Language Patterns
+### Module 2: Milton Model — Hypnotic Language Patterns (5 lessons)
 19 patterns, each with definition, tip-offs, and examples:
+- **Lesson 1:** Mind Reading, Lost Performative, Cause and Effect, Complex Equivalence
+- **Lesson 2:** Presuppositions, Universal Quantifiers, Modal Operators, Nominalizations
+- **Lesson 3:** Unspecified Verbs, Tag Questions, Lack of Referential Index, Comparative Deletions
+- **Lesson 4:** Pacing Current Experience, Double Binds, Conversational Postulates, Extended Quotes
+- **Lesson 5:** Selectional Restriction Violations, Ambiguities (4 types), Utilization + "Putting it all together" exercise
+
+Full pattern list:
 1. Mind Reading
 2. Lost Performative
 3. Cause and Effect
@@ -100,14 +111,25 @@ All content extracted and structured from:
 18. Ambiguities (Phonological, Syntactic, Scope, Punctuation)
 19. Utilization
 
-### Module 3: Quantum Linguistics
+### Module 3: Quantum Linguistics (3 lessons)
+- **Lesson 1:** Presuppositions — 9 linguistic types + exercises
+- **Lesson 2:** Embedded Commands + Cartesian Coordinates
+- **Lesson 3:** Symbolic Logic + Inductive & Deductive Language
+
+Content:
 - Presuppositions — 9 linguistic types (Existence, Possibility/Necessity, Cause-Effect, Complex Equivalence, Awareness, Time, Adverb/Adjective, Exclusive/Inclusive OR, Ordinal)
 - Embedded Commands (2 times means + 1 time end, delivered lower & louder)
 - Cartesian Coordinates (Theorem AB, Converse ~AB, Inverse A~B, Non-Mirror ~A~B)
 - Symbolic Logic
 - Inductive & Deductive Language
 
-### Module 4: Hierarchy of Ideas & Language Models
+### Module 4: Hierarchy of Ideas & Language Models (4 lessons)
+- **Lesson 1:** Chunking Up/Down + NLP Negotiation Model + Meta Model vs Milton Model
+- **Lesson 2:** Modal Operators + Prepositions (Spatial, Temporal, Time Scramble) + Decision Destroyer
+- **Lesson 3:** Linguistic Re-Sourcing, De-Identification, Linguistic Parts Integration, Prime Concerns
+- **Lesson 4:** Metaphor construction + Making Metaphors Work
+
+Content:
 - Chunking Up (agreement, trance) / Chunking Down (distinctions)
 - NLP Negotiation Model
 - Meta Model vs Milton Model
@@ -118,7 +140,13 @@ All content extracted and structured from:
 - Prime Concerns Elicitation
 - Metaphor construction
 
-### Module 5: Complex Meta Programs (MPVI)
+### Module 5: Complex Meta Programs (MPVI) (5 lessons)
+- **Lesson 1:** Direction Filter, Reason Filter, Frame of Reference (core motivation filters)
+- **Lesson 2:** Convincer Representational, Convincer Demonstration, Management Direction
+- **Lesson 3:** Action Filter, Affiliation, Work Preference, Primary Interest
+- **Lesson 4:** Chunk Size, Relationship, Emotional Stress Response, Time Storage, Modal Operator Sequence, Attention Direction
+- **Lesson 5:** Communication Styles (Info Processing, Listening, Speaking) + Linguistic Markers for all filters
+
 19 filters, each with elicitation question, options, and linguistic markers:
 1. Direction Filter (Toward ↔ Away)
 2. Reason Filter (Possibility / Necessity)
@@ -140,7 +168,12 @@ All content extracted and structured from:
 18. Listening Style (Literal / Inferential)
 19. Speaking Style (Literal / Inferential)
 
-### Module 6: Personal Breakthrough Sessions
+### Module 6: Personal Breakthrough Sessions (3 lessons)
+- **Lesson 1:** Pre-session preparation, screening questions, establishing rapport, detailed personal history (13 questions)
+- **Lesson 2:** Eliciting values, determining cause & effect, setting frames & outcomes, intervention steps
+- **Lesson 3:** Testing, future pacing, ecology check, session completion, task assignment, client disclosure
+
+Content:
 - Pre-session preparation and screening questions
 - Establishing rapport
 - Detailed Personal History (13 questions)
@@ -150,13 +183,52 @@ All content extracted and structured from:
 - Testing, future pacing, ecology check
 - Session completion and task assignment
 
-## Quiz Types
+## Quiz Strategy
 
-1. **Multiple Choice:** "Which Milton Model pattern is this sentence an example of?"
-2. **Pattern Identification:** Given a sentence, identify all presuppositions and/or Milton Model patterns present (mirrors Exercise #1 and #2 from the manual)
-3. **Construction:** "Write a sentence using [pattern]" — Claude evaluates correctness and quality
-4. **Meta Program Matching:** "Based on this person's response, which filter result do they exhibit?"
-5. **Linguistic Marker Selection:** "What would you say to someone with [filter result]?"
+Quizzes are **Claude-generated** per lesson. When a user starts a quiz, the frontend sends the lesson ID to `POST /api/learn/quiz`. The backend loads the lesson's content from JSON, sends it to Claude with the quiz-generation prompt, and returns structured questions. A separate `POST /api/learn/quiz/evaluate` call sends the user's answers + the original questions for Claude to score and provide feedback.
+
+**Flow:**
+1. User completes lesson content → clicks "Take Quiz"
+2. Frontend calls `POST /api/learn/quiz` with `{ lessonId: "module-2-lesson-1" }`
+3. Backend loads lesson content, sends to Claude with quiz-generation prompt: "Generate 5 quiz questions for this NLP content. Return JSON array."
+4. Claude returns questions in structured format (see schema below)
+5. User answers questions in the Quiz component
+6. Frontend calls `POST /api/learn/quiz/evaluate` with `{ lessonId, questions, userAnswers }`
+7. Claude evaluates, returns scores + feedback per question
+8. Frontend saves score to localStorage
+
+**Quiz question schema (Claude output):**
+```json
+[
+  {
+    "type": "multiple_choice",
+    "question": "Which Milton Model pattern is: 'I know you're wondering...'?",
+    "options": ["Mind Reading", "Lost Performative", "Presupposition", "Tag Question"],
+    "correctAnswer": "Mind Reading"
+  },
+  {
+    "type": "pattern_identification",
+    "question": "Identify all patterns in: 'It's good that you can learn this easily, can't you?'",
+    "expectedPatterns": ["Lost Performative", "Presupposition", "Tag Question"]
+  },
+  {
+    "type": "construction",
+    "prompt": "Write a sentence using an Embedded Command with a Cause and Effect pattern."
+  },
+  {
+    "type": "meta_program_match",
+    "scenario": "When asked what they want in a job, they say: 'I want to avoid a toxic environment and reduce stress.'",
+    "question": "What is this person's Direction Filter?",
+    "options": ["Toward", "Away", "Both Toward and Away"],
+    "correctAnswer": "Away"
+  }
+]
+```
+
+**Quiz types generated per module:**
+- **Modules 1-4:** Multiple choice + pattern identification + construction
+- **Module 5:** Meta program matching + linguistic marker selection
+- **Module 6:** Scenario-based questions about session flow and intervention order
 
 ## Practice Scenarios
 
@@ -187,9 +259,51 @@ All content extracted and structured from:
 - End-of-session debrief with patterns used, missed opportunities, suggestions
 
 ### Coaching Mechanics
-- **Coached mode:** After each user message, Claude responds in-character AND provides a coaching sidebar (what patterns you used, what you could try next)
+- **Coached mode:** After each user message, Claude responds in-character AND provides coaching analysis
 - **Uncoached mode:** Pure roleplay, debrief summary at end only
-- **Session debrief:** Patterns used (count + list), missed opportunities, overall assessment, suggestions for next practice focus
+
+### Chat State Management
+- Conversation history is held in **React state** (useState/useReducer in the Practice page)
+- The full message history is sent with every API call to `POST /api/practice/chat`
+- Sessions are **ephemeral** — lost on page refresh (no localStorage for chat history)
+- Max session length: 50 messages (25 exchanges). After 50 messages, prompt user to end session and get debrief.
+
+### Coached Mode Response Format
+Claude returns JSON for every practice message. The frontend parses and renders dialogue and coaching separately:
+
+```json
+{
+  "dialogue": "I'm not sure this is the right solution for us. We've tried similar approaches before and they didn't work out.",
+  "coaching": {
+    "patternsUsed": ["Cause and Effect", "Presupposition"],
+    "effectiveness": "Good use of cause-effect linking. The presupposition about 'easily' was subtle and well-placed.",
+    "suggestions": ["Try a Conversational Postulate next to guide them toward agreement.", "Match their Relationship Filter — they seem to be Sameness with Exception."],
+    "missedOpportunities": ["They used a Lost Performative ('didn't work out') — you could challenge this with a Meta Model question."]
+  }
+}
+```
+
+In **uncoached mode**, Claude returns only: `{ "dialogue": "..." }` — no coaching field.
+
+### Session Debrief Flow
+1. User clicks **"End Session"** button (always visible during practice)
+2. Frontend sends `POST /api/practice/debrief` with the full conversation history
+3. Claude returns a structured debrief:
+
+```json
+{
+  "summary": "You conducted a 12-message sales conversation...",
+  "patternsUsed": { "Mind Reading": 2, "Cause and Effect": 3, "Embedded Commands": 1 },
+  "totalPatterns": 6,
+  "missedOpportunities": ["The prospect exhibited an Away direction filter early on — matching with away-from language would have built more rapport."],
+  "strengths": ["Strong use of pacing current experience to build rapport."],
+  "areasToImprove": ["Practice using Double Binds to create the illusion of choice."],
+  "suggestedNextPractice": "pattern-drill"
+}
+```
+
+4. Frontend renders the debrief as a styled summary card
+5. Practice session count is incremented in localStorage
 
 ## AI System Prompts
 
@@ -217,7 +331,7 @@ All content extracted and structured from:
 - Full-text search across all patterns
 - Each card: pattern name, definition, tip-off words, 3-5 examples, related patterns
 - Meta Program cards additionally show: elicitation question, all options, linguistic markers for each option
-- No AI calls — pure static data rendering
+- No AI calls — pure static data rendering. Frontend imports JSON files directly as static assets. No server route needed.
 
 ## Progress Tracking (localStorage)
 
@@ -244,7 +358,11 @@ Dashboard displays:
 - Modules completed (X/6)
 - Overall quiz accuracy %
 - Practice sessions by scenario type
-- Suggested next action (next lesson or recommended practice scenario)
+- Suggested next action, computed client-side:
+  1. If any module has incomplete lessons → suggest next incomplete lesson
+  2. If all lessons complete but any quiz accuracy < 80% → suggest retaking that quiz
+  3. If all quizzes ≥ 80% but practice sessions < 3 → suggest a practice scenario
+  4. Otherwise → suggest the practice scenario with fewest sessions
 
 ## UI Design Notes
 
