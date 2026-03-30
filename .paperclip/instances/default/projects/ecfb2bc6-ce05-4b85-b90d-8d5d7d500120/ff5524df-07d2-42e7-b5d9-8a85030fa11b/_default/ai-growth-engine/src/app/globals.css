@@ -1,0 +1,31 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-mono), ui-monospace, monospace;
+  --color-bg-primary: #0A0A0F;
+  --color-bg-secondary: #14141F;
+  --color-accent: #3B82F6;
+  --color-accent-hover: #2563EB;
+  --color-amber: #F59E0B;
+  --color-emerald: #10B981;
+  --color-text-primary: #F1F5F9;
+  --color-text-secondary: #94A3B8;
+  --color-border: #1E293B;
+  --color-surface: #1A1A2E;
+}
+
+html {
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.cta-gradient {
+  background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+}
+
+.cta-gradient:hover {
+  background: linear-gradient(135deg, #2563EB, #7C3AED);
+}
