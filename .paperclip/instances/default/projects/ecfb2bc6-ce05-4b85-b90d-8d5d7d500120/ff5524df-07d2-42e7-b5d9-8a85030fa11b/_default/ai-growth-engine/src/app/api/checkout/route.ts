@@ -4,6 +4,10 @@ import { getStripe, PRICES } from "@/lib/stripe";
 export async function POST(req: NextRequest) {
   const { plan, orderBump } = await req.json();
 
+  if (plan !== "monthly" && plan !== "annual") {
+    return NextResponse.json({ error: "Invalid plan" }, { status: 400 });
+  }
+
   const lineItems: { price: string; quantity: number }[] = [];
 
   if (plan === "monthly") {

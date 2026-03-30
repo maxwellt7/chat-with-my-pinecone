@@ -2,7 +2,7 @@
 
 @theme {
   --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
-  --font-mono: var(--font-mono), ui-monospace, monospace;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
   --color-bg-primary: #0A0A0F;
   --color-bg-secondary: #14141F;
   --color-accent: #3B82F6;

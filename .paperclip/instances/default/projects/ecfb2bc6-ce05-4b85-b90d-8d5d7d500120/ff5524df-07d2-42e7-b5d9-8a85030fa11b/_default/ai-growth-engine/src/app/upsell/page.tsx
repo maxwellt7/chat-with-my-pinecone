@@ -6,9 +6,11 @@ import { trackEvent } from "@/lib/tracking";
 export default function UpsellPage() {
   const [loading, setLoading] = useState(false);
   const [showDownsell, setShowDownsell] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleUpsell(trial: boolean) {
     setLoading(true);
+    setError(null);
     trackEvent("InitiateCheckout", {
       value: trial ? 47 : 97,
       currency: "USD",
@@ -21,9 +23,20 @@ export default function UpsellPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ trial }),
       });
+      if (!res.ok) {
+        setError("Something went wrong. Please try again.");
+        setLoading(false);
+        return;
+      }
       const { url } = await res.json();
-      if (url) window.location.href = url;
+      if (url) {
+        window.location.href = url;
+      } else {
+        setError("Unable to create checkout session. Please try again.");
+        setLoading(false);
+      }
     } catch {
+      setError("Network error. Please check your connection and try again.");
       setLoading(false);
     }
   }
@@ -77,6 +90,11 @@ export default function UpsellPage() {
       </div>
 
       <div className="text-center">
+        {error && (
+          <div className="mx-auto mb-4 max-w-md rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+            {error}
+          </div>
+        )}
         <button
           onClick={() => handleUpsell(false)}
           disabled={loading}

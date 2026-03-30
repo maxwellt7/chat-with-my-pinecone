@@ -9,9 +9,11 @@ export default function CheckoutPage() {
   const [plan, setPlan] = useState<Plan>("annual");
   const [orderBump, setOrderBump] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleCheckout() {
     setLoading(true);
+    setError(null);
     trackEvent("InitiateCheckout", {
       value: plan === "monthly" ? 19 : 149,
       currency: "USD",
@@ -23,9 +25,20 @@ export default function CheckoutPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ plan, orderBump }),
       });
+      if (!res.ok) {
+        setError("Something went wrong. Please try again.");
+        setLoading(false);
+        return;
+      }
       const { url } = await res.json();
-      if (url) window.location.href = url;
+      if (url) {
+        window.location.href = url;
+      } else {
+        setError("Unable to create checkout session. Please try again.");
+        setLoading(false);
+      }
     } catch {
+      setError("Network error. Please check your connection and try again.");
       setLoading(false);
     }
   }
@@ -161,6 +174,12 @@ export default function CheckoutPage() {
           </div>
         </div>
       </div>
+
+      {error && (
+        <div className="mb-4 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+          {error}
+        </div>
+      )}
 
       {/* CTA */}
       <button

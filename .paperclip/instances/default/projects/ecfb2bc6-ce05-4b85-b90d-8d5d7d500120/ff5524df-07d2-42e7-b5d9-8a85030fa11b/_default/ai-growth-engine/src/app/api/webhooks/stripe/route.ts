@@ -3,9 +3,17 @@ import Stripe from "stripe";
 import { getStripe } from "@/lib/stripe";
 
 export async function POST(req: NextRequest) {
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  if (!webhookSecret) {
+    console.error("STRIPE_WEBHOOK_SECRET is not configured");
+    return NextResponse.json({ error: "Webhook not configured" }, { status: 500 });
+  }
+
   const body = await req.text();
-  const sig = req.headers.get("stripe-signature")!;
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+  const sig = req.headers.get("stripe-signature");
+  if (!sig) {
+    return NextResponse.json({ error: "Missing stripe-signature header" }, { status: 400 });
+  }
 
   let event: Stripe.Event;
 

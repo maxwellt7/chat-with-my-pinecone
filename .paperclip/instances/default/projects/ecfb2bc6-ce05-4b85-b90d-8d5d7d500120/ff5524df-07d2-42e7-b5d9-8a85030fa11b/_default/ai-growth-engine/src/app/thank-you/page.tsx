@@ -1,6 +1,29 @@
+import { redirect } from "next/navigation";
 import Link from "next/link";
+import { getStripe } from "@/lib/stripe";
 
-export default function ThankYouPage() {
+export default async function ThankYouPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ session_id?: string }>;
+}) {
+  const { session_id } = await searchParams;
+
+  if (!session_id) {
+    redirect("/");
+  }
+
+  let session;
+  try {
+    session = await getStripe().checkout.sessions.retrieve(session_id);
+  } catch {
+    redirect("/");
+  }
+
+  if (session.payment_status !== "paid") {
+    redirect("/");
+  }
+
   return (
     <main className="mx-auto max-w-2xl px-4 py-16 text-center sm:px-6">
       <div className="mb-6 text-5xl">🎉</div>
