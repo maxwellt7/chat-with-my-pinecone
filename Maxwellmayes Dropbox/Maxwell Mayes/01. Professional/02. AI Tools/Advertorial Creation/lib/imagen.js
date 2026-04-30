@@ -22,6 +22,9 @@ async function imagen4(prompt, aspectRatio) {
     throw new Error(`Imagen4 ${response.status}: ${err.error?.message}`);
   }
   const data = await response.json();
+  if (!data.predictions?.[0]?.bytesBase64Encoded) {
+    throw new Error('Imagen4: empty predictions in response');
+  }
   return data.predictions[0].bytesBase64Encoded;
 }
 
