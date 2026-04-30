@@ -1,0 +1,26 @@
+{
+  "slots": [
+    {
+      "id": "hero-image",
+      "type": "photo",
+      "aspectRatio": "16:9",
+      "prompt": "Professional lifestyle photography, happy senior couple in their 60s walking hand-in-hand on a sunny beach at golden hour, warm amber tones, soft bokeh background, ultra realistic, commercial photography",
+      "negativePrompt": "blurry, text, watermark, cartoon, illustration, low quality",
+      "outputFile": "advertorial_images/hero-image.jpg"
+    },
+    {
+      "id": "testimonial-mary-photo",
+      "type": "photo",
+      "aspectRatio": "1:1",
+      "prompt": "Portrait photo of a friendly senior woman in her late 60s, warm smile, casual blue cardigan, outdoor natural light, shallow depth of field, professional headshot style",
+      "negativePrompt": "blurry, text, watermark, cartoon, stock photo, fake looking",
+      "outputFile": "advertorial_images/testimonial-mary-photo.jpg"
+    },
+    {
+      "id": "trust-badge",
+      "type": "svg",
+      "svgContent": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120' width='120' height='120'><circle cx='60' cy='60' r='55' fill='#1a56db'/><text x='60' y='45' text-anchor='middle' fill='white' font-size='13' font-weight='bold' font-family='Arial'>FDA</text><text x='60' y='65' text-anchor='middle' fill='white' font-size='9' font-family='Arial'>REGISTERED</text><text x='60' y='82' text-anchor='middle' fill='white' font-size='9' font-family='Arial'>FACILITY</text></svg>",
+      "outputFile": null
+    }
+  ]
+}
