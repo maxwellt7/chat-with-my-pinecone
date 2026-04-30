@@ -1,0 +1,10 @@
+{
+  "name": "advertorial-creation",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Automated advertorial production pipeline",
+  "main": "run.js",
+  "scripts": {
+    "start": "node run.js"
+  }
+}
