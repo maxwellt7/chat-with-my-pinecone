@@ -1,0 +1,68 @@
+{
+  "sections": [
+    {
+      "id": "hero",
+      "designSection": "hero",
+      "headline": "Stop Living With Joint Pain",
+      "subheadline": "The Hidden Cause Doctors Won't Tell You",
+      "body": ["Every year, 54 million Americans suffer needlessly from joint pain..."],
+      "bullets": [],
+      "cta": null,
+      "testimonials": [],
+      "stats": [],
+      "imageSlots": [
+        {
+          "id": "hero-image",
+          "type": "lifestyle",
+          "aspectRatio": "16:9",
+          "context": "Senior person walking outdoors pain-free, golden hour lighting",
+          "placement": "hero section feature image"
+        }
+      ]
+    },
+    {
+      "id": "testimonials",
+      "designSection": "testimonials",
+      "headline": "Real People, Real Results",
+      "subheadline": "",
+      "body": [],
+      "bullets": [],
+      "cta": null,
+      "testimonials": [{ "quote": "I can finally walk my dog again!", "author": "Mary K., 67, Florida", "rating": 5 }],
+      "stats": [],
+      "imageSlots": [
+        {
+          "id": "testimonial-mary-photo",
+          "type": "portrait",
+          "aspectRatio": "1:1",
+          "context": "Friendly senior woman smiling, outdoor natural light, casual clothes",
+          "placement": "next to testimonial quote"
+        }
+      ]
+    },
+    {
+      "id": "cta",
+      "designSection": "cta",
+      "headline": "Get Relief Today",
+      "subheadline": "",
+      "body": [],
+      "bullets": [],
+      "cta": { "text": "Order Now — 50% Off", "subtext": "Limited time offer. 60-day guarantee." },
+      "testimonials": [],
+      "stats": [],
+      "imageSlots": []
+    },
+    {
+      "id": "footer",
+      "designSection": "footer",
+      "headline": "",
+      "subheadline": "",
+      "body": ["These statements have not been evaluated by the FDA."],
+      "bullets": [],
+      "cta": null,
+      "testimonials": [],
+      "stats": [],
+      "imageSlots": []
+    }
+  ]
+}
