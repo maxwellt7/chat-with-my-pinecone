@@ -55,7 +55,72 @@ async function main() {
   console.log(`   Output dir: ${outputDir}`);
   console.log(`   Reference:  ${args.reference}\n`);
 
-  // Steps wired in Task 13
+  const { createState } = await import('./lib/state.js');
+  const { runDesignForensics } = await import('./steps/01-design-forensics.js');
+  const { runCopyMapping } = await import('./steps/02-copy-mapping.js');
+  const { runHtmlGeneration } = await import('./steps/03-html-generation.js');
+  const { runImagePrompts } = await import('./steps/04-image-prompts.js');
+  const { runImageGeneration } = await import('./steps/05-image-generation.js');
+  const { runAssembly } = await import('./steps/06-assembly.js');
+  const { runDeployment } = await import('./steps/07-deployment.js');
+
+  const state = createState(outputDir);
+
+  if (args.force) {
+    console.log('  --force: clearing all cached state\n');
+    ['step1', 'step2', 'step3', 'step4', 'step5', 'step6', 'step7'].forEach(s => state.clearStep(s));
+  }
+
+  // Step 1
+  const designSpec = state.isStepDone('step1')
+    ? state.getStepData('step1')
+    : await runDesignForensics(args.reference, outputDir);
+  if (!state.isStepDone('step1')) state.markStepDone('step1', designSpec);
+
+  // Step 2
+  const copyMap = state.isStepDone('step2')
+    ? state.getStepData('step2')
+    : await runCopyMapping(copyContent, designSpec, outputDir);
+  if (!state.isStepDone('step2')) state.markStepDone('step2', copyMap);
+
+  // Step 3
+  const html = state.isStepDone('step3')
+    ? await import('node:fs').then(fs => fs.readFileSync(`${outputDir}/advertorial.html`, 'utf8'))
+    : await runHtmlGeneration(designSpec, copyMap, outputDir);
+  if (!state.isStepDone('step3')) state.markStepDone('step3', { generated: true });
+
+  // Step 4
+  const imagePrompts = state.isStepDone('step4')
+    ? state.getStepData('step4')
+    : await runImagePrompts(designSpec, copyMap, outputDir);
+  if (!state.isStepDone('step4')) state.markStepDone('step4', imagePrompts);
+
+  // Step 5 — always run (imagen.js skips already-generated files internally)
+  if (!state.isStepDone('step5')) {
+    await runImageGeneration(imagePrompts, outputDir);
+    state.markStepDone('step5', { generated: true });
+  } else {
+    console.log('  [5] Image generation: cached ✓');
+  }
+
+  // Step 6 — always re-run (idempotent, fast, picks up any newly generated images)
+  const { readFileSync } = await import('node:fs');
+  const currentHtml = readFileSync(`${outputDir}/advertorial.html`, 'utf8');
+  await runAssembly(currentHtml, imagePrompts, outputDir);
+
+  // Step 7
+  let liveUrl;
+  if (state.isStepDone('step7')) {
+    liveUrl = state.getStepData('step7').url;
+    console.log(`  [7] Deployment: cached ✓ → ${liveUrl}`);
+  } else {
+    liveUrl = await runDeployment(outputDir, runId);
+    state.markStepDone('step7', { url: liveUrl });
+  }
+
+  console.log(`\n✅ Done!`);
+  console.log(`   Live URL: ${liveUrl}`);
+  console.log(`   Output:   ${outputDir}\n`);
 }
 
 main().catch(err => { console.error(err.message); process.exit(1); });
