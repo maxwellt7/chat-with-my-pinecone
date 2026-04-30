@@ -7,7 +7,12 @@ export function createState(outputDir) {
 
   function load() {
     if (!existsSync(statePath)) return {};
-    return JSON.parse(readFileSync(statePath, 'utf8'));
+    try {
+      return JSON.parse(readFileSync(statePath, 'utf8'));
+    } catch {
+      console.warn(`[state] Corrupted state file, resetting: ${statePath}`);
+      return {};
+    }
   }
 
   function save(data) {
