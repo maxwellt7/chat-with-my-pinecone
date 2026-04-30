@@ -6,7 +6,7 @@ import { callClaude } from '../lib/claude.js';
 const SYSTEM = `You are a senior frontend engineer specializing in direct-response landing pages. Generate complete, production-quality single-file HTML. Return ONLY the raw HTML starting with <!DOCTYPE html> — no markdown, no explanation, no code fences.`;
 
 function stripHtmlFences(text) {
-  return text.replace(/^```(?:html)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
+  return text.replace(/^\s*```(?:html)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
 }
 
 function buildPrompt(designSpec, copyMap) {
