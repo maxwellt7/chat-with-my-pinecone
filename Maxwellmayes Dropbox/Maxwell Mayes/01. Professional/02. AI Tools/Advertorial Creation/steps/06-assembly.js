@@ -7,6 +7,9 @@ export async function runAssembly(html, imagePrompts, outputDir) {
   let assembled = html;
 
   for (const slot of imagePrompts.slots) {
+    if (!/^[a-z0-9-]+$/.test(slot.id)) {
+      throw new Error(`Assembly: slot ID "${slot.id}" is not valid kebab-case`);
+    }
     if (slot.type === 'svg') {
       const svgPattern = new RegExp(`<!--\\s*GENERATE_SVG:${slot.id}\\s*-->`, 'g');
       assembled = assembled.replace(svgPattern, slot.svgContent);
