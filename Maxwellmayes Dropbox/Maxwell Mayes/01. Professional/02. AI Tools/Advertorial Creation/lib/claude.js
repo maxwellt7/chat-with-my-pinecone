@@ -19,11 +19,13 @@ export async function callClaude(systemPrompt, userMessage, maxTokens = 8192) {
   });
 
   if (!response.ok) {
-    const err = await response.json();
-    throw new Error(`Claude API ${response.status}: ${err.error?.message ?? 'Unknown error'}`);
+    let errBody = {};
+    try { errBody = await response.json(); } catch {}
+    throw new Error(`Claude API ${response.status}: ${errBody.error?.message ?? 'Unknown error'}`);
   }
 
   const data = await response.json();
+  if (!data.content?.length) throw new Error('Claude API returned empty content');
   return data.content[0].text;
 }
 
