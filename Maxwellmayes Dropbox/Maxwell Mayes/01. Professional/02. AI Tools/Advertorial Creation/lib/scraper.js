@@ -2,13 +2,18 @@ const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (
 const BODY_CHAR_LIMIT = 100_000;
 
 export async function fetchPageHtml(url) {
-  const response = await fetch(url, {
-    headers: {
-      'User-Agent': UA,
-      'Accept': 'text/html,application/xhtml+xml',
-      'Accept-Language': 'en-US,en;q=0.9'
-    }
-  });
+  let response;
+  try {
+    response = await fetch(url, {
+      headers: {
+        'User-Agent': UA,
+        'Accept': 'text/html,application/xhtml+xml',
+        'Accept-Language': 'en-US,en;q=0.9'
+      }
+    });
+  } catch (err) {
+    throw new Error(`Scraper: Could not fetch ${url} — ${err.message}`);
+  }
   if (!response.ok) {
     throw new Error(`Scraper: HTTP ${response.status} for ${url}`);
   }
