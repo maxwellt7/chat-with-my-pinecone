@@ -1,7 +1,6 @@
-// run.js
-import { createHash } from 'node:crypto';
-import { readFileSync, existsSync, mkdirSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { runPipeline, getRunId } from './lib/pipeline.js';
 
 function parseArgs(argv) {
   const args = {};
@@ -21,13 +20,6 @@ function validateEnv() {
   }
 }
 
-function getRunId(referenceUrl, copyContent) {
-  return createHash('sha256')
-    .update(referenceUrl + copyContent)
-    .digest('hex')
-    .slice(0, 8);
-}
-
 async function main() {
   const args = parseArgs(process.argv);
   if (!args.copy || !args.reference) {
@@ -45,89 +37,16 @@ async function main() {
 
   const copyContent = readFileSync(copyPath, 'utf8');
   const runId = getRunId(args.reference, copyContent);
-  const outputDir = resolve(`output/${runId}`);
-
-  mkdirSync(outputDir, { recursive: true });
-  mkdirSync(`${outputDir}/advertorial_images`, { recursive: true });
 
   console.log(`\n🚀 Advertorial Pipeline`);
   console.log(`   Run ID:     ${runId}`);
-  console.log(`   Output dir: ${outputDir}`);
   console.log(`   Reference:  ${args.reference}\n`);
 
-  const { createState } = await import('./lib/state.js');
-  const { runDesignForensics } = await import('./steps/01-design-forensics.js');
-  const { runCopyMapping } = await import('./steps/02-copy-mapping.js');
-  const { runHtmlGeneration } = await import('./steps/03-html-generation.js');
-  const { runImagePrompts } = await import('./steps/04-image-prompts.js');
-  const { runImageGeneration } = await import('./steps/05-image-generation.js');
-  const { runAssembly } = await import('./steps/06-assembly.js');
-  const { runDeployment } = await import('./steps/07-deployment.js');
-
-  const state = createState(outputDir);
-
-  if (args.force) {
-    console.log('  --force: clearing all cached state\n');
-    ['step1', 'step2', 'step3', 'step4', 'step5', 'step6', 'step7'].forEach(s => state.clearStep(s));
-  }
-
-  // Step 1
-  const designSpec = state.isStepDone('step1')
-    ? state.getStepData('step1')
-    : await runDesignForensics(args.reference, outputDir);
-  if (!state.isStepDone('step1')) {
-    if (!designSpec) throw new Error('Step 1 returned no design spec');
-    state.markStepDone('step1', designSpec);
-  }
-
-  // Step 2
-  const copyMap = state.isStepDone('step2')
-    ? state.getStepData('step2')
-    : await runCopyMapping(copyContent, designSpec, outputDir);
-  if (!state.isStepDone('step2')) {
-    if (!copyMap) throw new Error('Step 2 returned no copy map');
-    state.markStepDone('step2', copyMap);
-  }
-
-  // Step 3
-  if (!state.isStepDone('step3')) {
-    await runHtmlGeneration(designSpec, copyMap, outputDir);
-    state.markStepDone('step3', { generated: true });
-  } else {
-    console.log('  [3] HTML generation: cached ✓');
-  }
-
-  // Step 4
-  const imagePrompts = state.isStepDone('step4')
-    ? state.getStepData('step4')
-    : await runImagePrompts(designSpec, copyMap, outputDir);
-  if (!state.isStepDone('step4')) {
-    if (!imagePrompts) throw new Error('Step 4 returned no image prompts');
-    state.markStepDone('step4', imagePrompts);
-  }
-
-  // Step 5 — always run (imagen.js skips already-generated files internally)
-  if (!state.isStepDone('step5')) {
-    await runImageGeneration(imagePrompts, outputDir);
-    state.markStepDone('step5', { generated: true });
-  } else {
-    console.log('  [5] Image generation: cached ✓');
-  }
-
-  // Step 6 — always re-run (idempotent, fast, picks up any newly generated images)
-  const currentHtml = readFileSync(`${outputDir}/advertorial.html`, 'utf8');
-  await runAssembly(currentHtml, imagePrompts, outputDir);
-  state.markStepDone('step6', { assembled: true });
-
-  // Step 7
-  let liveUrl;
-  if (state.isStepDone('step7')) {
-    liveUrl = state.getStepData('step7').url;
-    console.log(`  [7] Deployment: cached ✓ → ${liveUrl}`);
-  } else {
-    liveUrl = await runDeployment(outputDir, runId);
-    state.markStepDone('step7', { url: liveUrl });
-  }
+  const { liveUrl, outputDir } = await runPipeline({
+    copyContent,
+    referenceUrl: args.reference,
+    force: args.force
+  });
 
   console.log(`\n✅ Done!`);
   console.log(`   Live URL: ${liveUrl}`);
