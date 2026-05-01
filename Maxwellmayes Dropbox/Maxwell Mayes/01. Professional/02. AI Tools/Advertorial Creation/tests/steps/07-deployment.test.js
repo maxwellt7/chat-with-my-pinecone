@@ -41,3 +41,44 @@ test('runDeployment creates vercel.json, renames advertorial.html to index.html,
 
   rmSync(TMP, { recursive: true });
 });
+
+test('runDeployment appends --token flag when VERCEL_TOKEN is set', async () => {
+  mkdirSync(TMP, { recursive: true });
+  const { writeFileSync } = await import('node:fs');
+  writeFileSync(join(TMP, 'advertorial.html'), '<html></html>');
+  process.env.VERCEL_TOKEN = 'tok-abc123';
+
+  let capturedCmd;
+  const mockExec = (cmd) => { capturedCmd = cmd; return 'https://advertorial-test.vercel.app\n'; };
+
+  await runDeployment(TMP, 'testrunid', mockExec);
+  assert.match(capturedCmd, /--token=tok-abc123/);
+
+  delete process.env.VERCEL_TOKEN;
+  rmSync(TMP, { recursive: true });
+});
+
+test('runDeployment omits --token flag when VERCEL_TOKEN is not set', async () => {
+  mkdirSync(TMP, { recursive: true });
+  const { writeFileSync } = await import('node:fs');
+  writeFileSync(join(TMP, 'advertorial.html'), '<html></html>');
+  delete process.env.VERCEL_TOKEN;
+
+  let capturedCmd;
+  const mockExec = (cmd) => { capturedCmd = cmd; return 'https://advertorial-test.vercel.app\n'; };
+
+  await runDeployment(TMP, 'testrunid', mockExec);
+  assert.doesNotMatch(capturedCmd, /--token/);
+
+  rmSync(TMP, { recursive: true });
+});
+
+test('runDeployment throws when VERCEL_TOKEN contains shell metacharacters', async () => {
+  process.env.VERCEL_TOKEN = 'tok;rm -rf /';
+  const mockExec = () => 'https://advertorial-test.vercel.app\n';
+  await assert.rejects(
+    () => runDeployment('/tmp/fake', 'testrun', mockExec),
+    /VERCEL_TOKEN contains invalid characters/
+  );
+  delete process.env.VERCEL_TOKEN;
+});

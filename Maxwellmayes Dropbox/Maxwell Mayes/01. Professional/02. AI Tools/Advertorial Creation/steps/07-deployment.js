@@ -12,6 +12,11 @@ export function parseVercelUrl(output) {
 }
 
 export async function runDeployment(outputDir, runId, exec = execSync) {
+  if (process.env.VERCEL_TOKEN && !/^[A-Za-z0-9_-]+$/.test(process.env.VERCEL_TOKEN)) {
+    throw new Error('[7] VERCEL_TOKEN contains invalid characters');
+  }
+  const tokenFlag = process.env.VERCEL_TOKEN ? ` --token=${process.env.VERCEL_TOKEN}` : '';
+
   console.log('  [7] Deployment: preparing Vercel project...');
 
   writeFileSync(
@@ -26,7 +31,7 @@ export async function runDeployment(outputDir, runId, exec = execSync) {
   }
 
   console.log('  [7] Deployment: deploying to Vercel (vercel --yes)...');
-  const output = exec('vercel --yes --prod 2>&1', { encoding: 'utf8', cwd: outputDir, shell: true });
+  const output = exec(`vercel --yes --prod${tokenFlag} 2>&1`, { encoding: 'utf8', cwd: outputDir, shell: true });
 
   const url = parseVercelUrl(output);
   console.log(`  [7] Deployment: live at ${url} ✓`);
